@@ -212,8 +212,11 @@ target system or to the host system. Use a prefixed variable instead.
 
     if(DEFINED PORT)
         # Always fixup RPATH on linux, osx and bsds unless explicitly disabled.
+        # Skip ELF RPATH fixup when cross-compiling on macOS: patchelf is not provided for Darwin.
         if(VCPKG_FIXUP_ELF_RPATH OR ((VCPKG_TARGET_IS_LINUX OR VCPKG_TARGET_IS_BSD) AND NOT DEFINED VCPKG_FIXUP_ELF_RPATH))
-            z_vcpkg_fixup_rpath_in_dir()
+            if(NOT (VCPKG_CROSSCOMPILING AND VCPKG_HOST_IS_OSX))
+                z_vcpkg_fixup_rpath_in_dir()
+            endif()
         endif()
         if(VCPKG_FIXUP_MACHO_RPATH OR (VCPKG_TARGET_IS_OSX AND NOT DEFINED VCPKG_FIXUP_MACHO_RPATH))
             z_vcpkg_fixup_macho_rpath_in_dir()
